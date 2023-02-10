@@ -13,6 +13,15 @@ show_menu{
     echo "3. Start/Restart Xray Service"
 }
 
+get_prefix_ipv6{
+    ip -6 route show | awk -F ' ' '{print $1}' | grep -v ^::1 | grep -v ^fe80 | grep -v ^default
+}
+
 nft_enable{
-    nft add chian
+    nft add chain ip nat V2RAY
+    nft 'add rule ip nat V2RAY ip daddr 192.168.0.0/16 counter return'
+    nft 'add rule ip nat V2RAY ip protocol tcp mark 0xff counter return'
+    nft 'add rule ip nat V2RAY ip protocol tcp counter redirect to :12345'
+    nft 'add rule ip nat PREROUTING ip protocol tcp counter jump V2RAY'
+    nft 'add rule ip nat OUTPUT ip protocol tcp counter jump V2RAY'
 }
