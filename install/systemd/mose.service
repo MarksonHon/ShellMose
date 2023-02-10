@@ -1,0 +1,15 @@
+[Unit]
+Description=Make Xray as a Transparent Proxy client
+After=network.target nss-lookup.target iptables.service ip6tables.service nftables.service
+Wants=network.target
+
+[Service]
+Type=simple
+User=root
+LimitNPROC=500
+LimitNOFILE=1000000
+ExecStart=/usr/bin/mosed
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
